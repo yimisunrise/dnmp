@@ -360,6 +360,50 @@ services:
 #    networks:
 #      - default
 
+
+  rmqnamesrv:
+    image: foxiswho/rocketmq:server
+    container_name: rmqnamesrv
+    ports:
+      - "${ROCKETMQ_SERVER_HOST_PORT}:9876"
+    volumes:
+      - ./logs/rocketmq/logs:/opt/logs
+      - ./data/rocketmq/store:/opt/store
+    networks:
+      - default
+
+  rmqbroker:
+    image: foxiswho/rocketmq:broker
+    container_name: rmqbroker
+    ports:
+      - "${ROCKETMQ_BROKER_HOST_PORT_1}:10909"
+      - "${ROCKETMQ_BROKER_HOST_PORT_2}:10911"
+    volumes:
+      - ./logs/rocketmq/logs:/opt/logs
+      - ./data/rocketmq/store:/opt/store
+      - ./services/rocketmq/broker.conf:/etc/rocketmq/broker.conf
+    environment:
+        NAMESRV_ADDR: "rmqnamesrv:9876"
+        JAVA_OPTS: " -Duser.home=/opt"
+        JAVA_OPT_EXT: "-server -Xms128m -Xmx128m -Xmn128m"
+    command: mqbroker -c /etc/rocketmq/broker.conf
+    depends_on:
+      - rmqnamesrv
+    networks:
+      - default
+
+  rmqconsole:
+    image: styletang/rocketmq-console-ng
+    container_name: rmqconsole
+    ports:
+      - 8080:8080
+    environment:
+        JAVA_OPTS: "-Drocketmq.namesrv.addr=rmqnamesrv:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    depends_on:
+      - rmqnamesrv
+    networks:
+      - default
+
 networks:
   default:
     driver: bridge
