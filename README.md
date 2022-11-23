@@ -76,6 +76,8 @@ DNMP项目特点：
 │   ├── php                     PHP5.6 - PHP7.4 配置目录
 │   ├── php54                   PHP5.4 配置目录
 │   └── redis                   Redis 配置目录
+│   └── rabbitmq                RabbitMq 配置目录
+│   └── rocketmq                RocketMq 配置目录
 ├── logs                        日志目录
 ├── docker-compose.sample.yml   Docker 服务配置示例文件
 ├── env.smaple                  环境配置示例文件
